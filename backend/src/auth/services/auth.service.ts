@@ -3,7 +3,7 @@ import { JwtPayload, sign, verify } from 'jsonwebtoken';
 import crypto from 'crypto';
 import { UserModel, IUser } from '../models/User.model';
 import { env } from '../../config/env';
-import { JwtTokens, UserPayload } from '../types/auth.types';
+import { AuthResponse, JwtTokens, UserPayload } from '../types/auth.types';
 
 const signAccessToken = (payload: UserPayload): string => {
   return sign(payload as any, env.jwtAccessSecret as any, { expiresIn: env.accessTokenExpiresIn as any } as any);
@@ -20,7 +20,7 @@ export const registerUser = async (input: {
   lastName: string;
   role: IUser['role'];
   createdBy?: string | null;
-}): Promise<JwtTokens> => {
+}): Promise<AuthResponse> => {
   const existingUser = await UserModel.findOne({ email: input.email });
   if (existingUser) {
     throw Object.assign(new Error('Email already in use'), { code: 'USER_EXISTS', status: 409 });
@@ -44,10 +44,14 @@ export const registerUser = async (input: {
   user.refreshToken = refreshToken;
   await user.save();
 
-  return { accessToken, refreshToken };
+  return {
+    user: { id: user.id, email: user.email, role: user.role, firstName: user.firstName, lastName: user.lastName },
+    accessToken,
+    refreshToken
+  };
 };
 
-export const loginUser = async (email: string, password: string): Promise<JwtTokens> => {
+export const loginUser = async (email: string, password: string): Promise<AuthResponse> => {
   const user = await UserModel.findOne({ email });
   if (!user) {
     throw Object.assign(new Error('Invalid credentials'), { code: 'INVALID_CREDENTIALS', status: 401 });
@@ -65,7 +69,11 @@ export const loginUser = async (email: string, password: string): Promise<JwtTok
   user.refreshToken = refreshToken;
   await user.save();
 
-  return { accessToken, refreshToken };
+  return {
+    user: { id: user.id, email: user.email, role: user.role, firstName: user.firstName, lastName: user.lastName },
+    accessToken,
+    refreshToken
+  };
 };
 
 export const logoutUser = async (userId: string): Promise<void> => {

@@ -1,13 +1,13 @@
 import { app } from './app';
 import { connectDatabase } from './config/db';
-import { connectRedis } from './config/redis';
 import { logger } from './logging/logger';
 import { env } from './config/env';
 
 const startServer = async (): Promise<void> => {
   try {
     await connectDatabase();
-    await connectRedis();
+    logger.info('MongoDB connected');
+
     app.listen(env.port, () => {
       logger.info(`Server listening on http://localhost:${env.port}`);
     });

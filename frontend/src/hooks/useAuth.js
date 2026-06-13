@@ -9,24 +9,34 @@ export const useLogin = () => {
   return useMutation({
     mutationFn: ({ email, password }) => authAPI.login(email, password),
     onSuccess: (response) => {
-      const { user, token, refreshToken } = response.data
-      login(user, token, refreshToken)
+      // Backend wraps in { data, meta, error } — unwrap with response.data.data
+      const { user, accessToken, refreshToken } = response.data.data
+      login(user, accessToken, refreshToken)
       toast.success('Logged in successfully!')
     },
     onError: (error) => {
-      toast.error(error.response?.data?.message || 'Login failed')
+      toast.error(error.response?.data?.error?.message || 'Login failed')
     },
   })
 }
 
 export const useRegister = () => {
+  const { login } = useAuthStore()
+
   return useMutation({
-    mutationFn: (data) => authAPI.register(data),
-    onSuccess: () => {
+    mutationFn: (data) => {
+      // Strip confirmPassword — backend doesn't need it
+      const { confirmPassword, ...payload } = data
+      return authAPI.register(payload)
+    },
+    onSuccess: (response) => {
+      // Auto-login after registration using returned tokens + user
+      const { user, accessToken, refreshToken } = response.data.data
+      login(user, accessToken, refreshToken)
       toast.success('Registration successful! Please verify your email.')
     },
     onError: (error) => {
-      toast.error(error.response?.data?.message || 'Registration failed')
+      toast.error(error.response?.data?.error?.message || 'Registration failed')
     },
   })
 }
@@ -40,6 +50,10 @@ export const useLogout = () => {
       logout()
       toast.success('Logged out successfully')
     },
+    onError: () => {
+      // Force local logout even if server call fails
+      logout()
+    },
   })
 }
 
@@ -49,21 +63,24 @@ export const useMe = () => {
   return useQuery({
     queryKey: ['auth', 'me'],
     queryFn: () => authAPI.me(),
-    onSuccess: (response) => {
-      setUser(response.data)
+    select: (response) => response.data.data,
+    onSuccess: (user) => {
+      setUser(user)
     },
     enabled: !!useAuthStore.getState().token,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: false,
   })
 }
 
 export const useVerifyEmail = () => {
   return useMutation({
-    mutationFn: (code) => authAPI.verifyEmail(code),
+    mutationFn: (token) => authAPI.verifyEmail(token),
     onSuccess: () => {
       toast.success('Email verified successfully!')
     },
     onError: (error) => {
-      toast.error(error.response?.data?.message || 'Verification failed')
+      toast.error(error.response?.data?.error?.message || 'Verification failed')
     },
   })
 }
@@ -75,7 +92,7 @@ export const useForgotPassword = () => {
       toast.success('Reset link sent to your email')
     },
     onError: (error) => {
-      toast.error(error.response?.data?.message || 'Failed to send reset link')
+      toast.error(error.response?.data?.error?.message || 'Failed to send reset link')
     },
   })
 }
@@ -87,7 +104,7 @@ export const useResetPassword = () => {
       toast.success('Password reset successfully!')
     },
     onError: (error) => {
-      toast.error(error.response?.data?.message || 'Password reset failed')
+      toast.error(error.response?.data?.error?.message || 'Password reset failed')
     },
   })
 }

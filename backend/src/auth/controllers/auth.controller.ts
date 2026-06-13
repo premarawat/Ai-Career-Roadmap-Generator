@@ -1,14 +1,15 @@
 import { Request, Response, NextFunction } from 'express';
 import { registerUser, loginUser, logoutUser, refreshTokens, initiateForgotPassword, resetPassword, verifyEmailToken } from '../services/auth.service';
+import { UserModel } from '../models/User.model';
 import { sendCreated, sendSuccess, sendError } from '../../common/helpers/response.helper';
 
 export const register = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
   try {
-    const tokens = await registerUser({
+    const result = await registerUser({
       ...req.body,
       createdBy: null
     });
-    return sendCreated(res, tokens, res.locals.requestId);
+    return sendCreated(res, result, res.locals.requestId);
   } catch (error) {
     return next(error as Error);
   }
@@ -16,8 +17,8 @@ export const register = async (req: Request, res: Response, next: NextFunction):
 
 export const login = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
   try {
-    const tokens = await loginUser(req.body.email, req.body.password);
-    return sendSuccess(res, tokens, res.locals.requestId);
+    const result = await loginUser(req.body.email, req.body.password);
+    return sendSuccess(res, result, res.locals.requestId);
   } catch (error) {
     return next(error as Error);
   }
@@ -66,6 +67,21 @@ export const verifyEmail = async (req: Request, res: Response, next: NextFunctio
   try {
     await verifyEmailToken(req.query.token as string);
     return sendSuccess(res, { message: 'Email verified successfully' }, res.locals.requestId);
+  } catch (error) {
+    return next(error as Error);
+  }
+};
+
+export const getMe = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+  try {
+    if (!req.user) {
+      return sendError(res, 'UNAUTHORIZED', 'Not authenticated', res.locals.requestId, [], 401);
+    }
+    const user = await UserModel.findById(req.user.id).select('-password -refreshToken -passwordResetToken -passwordResetExpires -emailVerificationToken');
+    if (!user) {
+      return sendError(res, 'NOT_FOUND', 'User not found', res.locals.requestId, [], 404);
+    }
+    return sendSuccess(res, user, res.locals.requestId);
   } catch (error) {
     return next(error as Error);
   }

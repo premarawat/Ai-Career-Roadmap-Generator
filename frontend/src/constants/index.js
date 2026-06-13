@@ -43,16 +43,16 @@ export const API_ENDPOINTS = {
     ME: '/auth/me',
   },
   PROFILE: {
-    GET: '/profile',
-    UPDATE: '/profile',
-    GET_BY_ID: '/profile/:id',
+    GET: '/career-profile',
+    UPDATE: '/career-profile',
+    GET_BY_ID: '/career-profile/:id',
   },
   GOALS: {
-    LIST: '/goals',
-    CREATE: '/goals',
-    GET: '/goals/:id',
-    UPDATE: '/goals/:id',
-    DELETE: '/goals/:id',
+    LIST: '/career-goals',
+    CREATE: '/career-goals',
+    GET: '/career-goals/:id',
+    UPDATE: '/career-goals/:id',
+    DELETE: '/career-goals/:id',
   },
   SKILLS: {
     LIST: '/skills',
@@ -67,10 +67,23 @@ export const API_ENDPOINTS = {
     LIST: '/roadmap',
     UPDATE: '/roadmap/:id',
   },
+  GAP_ANALYSIS: {
+    CREATE: '/gap-analysis',
+    GET: '/gap-analysis/:id',
+  },
+  PROJECTS: {
+    RECOMMEND: '/projects',
+    LIST: '/projects',
+  },
+  MENTOR_REVIEW: {
+    CREATE: '/mentor-review',
+    LIST: '/mentor-review',
+    UPDATE: '/mentor-review/:id',
+  },
   ANALYTICS: {
-    DASHBOARD: '/analytics/dashboard',
-    PROGRESS: '/analytics/progress',
-    SKILLS_GROWTH: '/analytics/skills-growth',
+    DASHBOARD: '/admin/analytics', // maps to backend /admin/analytics
+    PROGRESS: '/progress',
+    SKILLS_GROWTH: '/skills-growth',
   },
 }
 

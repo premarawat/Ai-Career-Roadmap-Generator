@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { LOCAL_STORAGE_KEYS } from '@/constants'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api/v1'
 
 const httpClient = axios.create({
   baseURL: API_BASE_URL,
@@ -40,15 +40,17 @@ httpClient.interceptors.response.use(
             refreshToken,
           })
 
-          const { token } = response.data
-          localStorage.setItem(LOCAL_STORAGE_KEYS.AUTH_TOKEN, token)
+          // Backend wraps response in { data: { accessToken, refreshToken }, meta, error }
+          const { accessToken } = response.data.data
+          localStorage.setItem(LOCAL_STORAGE_KEYS.AUTH_TOKEN, accessToken)
 
-          originalRequest.headers.Authorization = `Bearer ${token}`
+          originalRequest.headers.Authorization = `Bearer ${accessToken}`
           return httpClient(originalRequest)
         }
       } catch (refreshError) {
         localStorage.removeItem(LOCAL_STORAGE_KEYS.AUTH_TOKEN)
         localStorage.removeItem(LOCAL_STORAGE_KEYS.REFRESH_TOKEN)
+        localStorage.removeItem(LOCAL_STORAGE_KEYS.USER)
         window.location.href = '/auth/login'
         return Promise.reject(refreshError)
       }

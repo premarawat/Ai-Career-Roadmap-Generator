@@ -6,8 +6,7 @@ dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 const requiredVars = [
   'MONGO_URI',
   'JWT_ACCESS_TOKEN_SECRET',
-  'JWT_REFRESH_TOKEN_SECRET',
-  'OPENAI_API_KEY'
+  'JWT_REFRESH_TOKEN_SECRET'
 ] as const;
 
 requiredVars.forEach((name) => {
@@ -26,11 +25,6 @@ export const env = {
   jwtRefreshSecret: process.env.JWT_REFRESH_TOKEN_SECRET as string,
   accessTokenExpiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN ?? '15m',
   refreshTokenExpiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN ?? '7d',
-  redis: {
-    host: process.env.REDIS_HOST ?? '127.0.0.1',
-    port: Number(process.env.REDIS_PORT ?? 6379),
-    password: process.env.REDIS_PASSWORD ?? undefined
-  },
   cloudinary: {
     cloudName: process.env.CLOUDINARY_CLOUD_NAME,
     apiKey: process.env.CLOUDINARY_API_KEY,

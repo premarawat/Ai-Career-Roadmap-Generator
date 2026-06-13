@@ -20,10 +20,21 @@ export default function LoginPage() {
     resolver: zodResolver(loginSchema),
   })
 
+  const getRoleDashboard = (role) => {
+    const roleMap = {
+      student: '/dashboard/student',
+      mentor: '/dashboard/mentor',
+      placement_officer: '/dashboard/placement',
+      admin: '/dashboard/admin',
+    }
+    return roleMap[role] ?? '/dashboard/student'
+  }
+
   const onSubmit = (data) => {
     login(data, {
       onSuccess: () => {
-        navigate('/dashboard/student')
+        const user = JSON.parse(localStorage.getItem('user') || '{}')
+        navigate(getRoleDashboard(user?.role))
       },
     })
   }

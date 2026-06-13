@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom'
 import { PrivateRoute, PublicRoute, RoleRoute } from './ProtectedRoute'
 
 // Layout
@@ -66,6 +66,20 @@ import AdminLogsPage from '@/features/acrg/admin/pages/AdminLogsPage'
 import NotFoundPage from '@/features/acrg/errors/pages/NotFoundPage'
 import UnauthorizedPage from '@/features/acrg/errors/pages/UnauthorizedPage'
 import ErrorPage from '@/features/acrg/errors/pages/ErrorPage'
+import { useAuthStore } from '@/store/authStore'
+
+// Redirect /dashboard → role-specific dashboard
+function DashboardRedirect() {
+  const { user } = useAuthStore()
+  const roleMap = {
+    student: '/dashboard/student',
+    mentor: '/dashboard/mentor',
+    placement_officer: '/dashboard/placement',
+    admin: '/dashboard/admin',
+  }
+  const role = user?.role ?? JSON.parse(localStorage.getItem('user') || '{}')?.role
+  return <Navigate to={roleMap[role] ?? '/dashboard/student'} replace />
+}
 
 const router = createBrowserRouter([
   {
@@ -126,6 +140,10 @@ const router = createBrowserRouter([
       </PrivateRoute>
     ),
     children: [
+      {
+        index: true,
+        element: <DashboardRedirect />,
+      },
       {
         path: 'student',
         element: (

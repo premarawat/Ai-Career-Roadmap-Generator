@@ -1,18 +1,8 @@
-import { createClient } from 'redis';
-import { env } from './env';
+// Redis is disabled — stub exported so existing imports don't break at compile time.
+// Re-enable by installing Redis locally and restoring the real implementation.
 
-export const redisClient = createClient({
-  socket: {
-    host: env.redis.host,
-    port: env.redis.port
-  },
-  password: env.redis.password
-});
+export const redisClient = null;
 
 export const connectRedis = async (): Promise<void> => {
-  redisClient.on('error', (error) => {
-    console.error('Redis client error', error);
-  });
-
-  await redisClient.connect();
+  // No-op: Redis is not configured in this environment
 };

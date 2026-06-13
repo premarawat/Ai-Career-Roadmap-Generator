@@ -1,38 +1,14 @@
-import { Queue, Worker, QueueScheduler } from 'bullmq';
-import { redisClient } from '../config/redis';
 import { logger } from '../logging/logger';
 
-export const roadmapQueue = new Queue('roadmap-generation', { connection: redisClient as unknown as any });
-export const notificationQueue = new Queue('notifications', { connection: redisClient as unknown as any });
-export const analyticsQueue = new Queue('analytics', { connection: redisClient as unknown as any });
+// Background queues are disabled — Redis not configured.
+// These are stub exports so any existing import of queue.ts compiles without error.
 
-new QueueScheduler('roadmap-generation', { connection: redisClient as unknown as any });
-new QueueScheduler('notifications', { connection: redisClient as unknown as any });
-new QueueScheduler('analytics', { connection: redisClient as unknown as any });
+export const roadmapQueue = null;
+export const notificationQueue = null;
+export const analyticsQueue = null;
 
-export const roadmapWorker = new Worker(
-  'roadmap-generation',
-  async (job) => {
-    logger.info(`Processing roadmap job ${job.id}`);
-    return job.data;
-  },
-  { connection: redisClient as unknown as any }
-);
+export const roadmapWorker = null;
+export const notificationWorker = null;
+export const analyticsWorker = null;
 
-export const notificationWorker = new Worker(
-  'notifications',
-  async (job) => {
-    logger.info(`Processing notification job ${job.id}`);
-    return job.data;
-  },
-  { connection: redisClient as unknown as any }
-);
-
-export const analyticsWorker = new Worker(
-  'analytics',
-  async (job) => {
-    logger.info(`Processing analytics job ${job.id}`);
-    return job.data;
-  },
-  { connection: redisClient as unknown as any }
-);
+logger.info('Background job queues are disabled (Redis not configured).');

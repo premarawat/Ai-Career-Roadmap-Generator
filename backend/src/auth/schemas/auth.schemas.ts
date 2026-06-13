@@ -8,7 +8,8 @@ export const registerSchema = z.object({
     firstName: z.string().min(1),
     lastName: z.string().min(1),
     role: z.nativeEnum(Roles),
-    resumeUrl: z.string().url().optional()
+    resumeUrl: z.string().url().optional(),
+    confirmPassword: z.string().optional()  // accepted but ignored — stripped before DB write
   })
 });
 

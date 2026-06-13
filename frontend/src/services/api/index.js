@@ -23,7 +23,7 @@ export const profileAPI = {
   get: () => httpClient.get(API_ENDPOINTS.PROFILE.GET),
   getById: (id) =>
     httpClient.get(API_ENDPOINTS.PROFILE.GET_BY_ID.replace(':id', id)),
-  update: (data) => httpClient.put(API_ENDPOINTS.PROFILE.UPDATE, data),
+  update: (data) => httpClient.patch(API_ENDPOINTS.PROFILE.UPDATE, data),
 }
 
 // Goals API
@@ -32,7 +32,7 @@ export const goalsAPI = {
   create: (data) => httpClient.post(API_ENDPOINTS.GOALS.CREATE, data),
   get: (id) => httpClient.get(API_ENDPOINTS.GOALS.GET.replace(':id', id)),
   update: (id, data) =>
-    httpClient.put(API_ENDPOINTS.GOALS.UPDATE.replace(':id', id), data),
+    httpClient.patch(API_ENDPOINTS.GOALS.UPDATE.replace(':id', id), data),
   delete: (id) =>
     httpClient.delete(API_ENDPOINTS.GOALS.DELETE.replace(':id', id)),
 }
@@ -43,7 +43,7 @@ export const skillsAPI = {
   create: (data) => httpClient.post(API_ENDPOINTS.SKILLS.CREATE, data),
   get: (id) => httpClient.get(API_ENDPOINTS.SKILLS.GET.replace(':id', id)),
   update: (id, data) =>
-    httpClient.put(API_ENDPOINTS.SKILLS.UPDATE.replace(':id', id), data),
+    httpClient.patch(API_ENDPOINTS.SKILLS.UPDATE.replace(':id', id), data),
   delete: (id) =>
     httpClient.delete(API_ENDPOINTS.SKILLS.DELETE.replace(':id', id)),
 }
@@ -54,7 +54,32 @@ export const roadmapAPI = {
   get: (id) => httpClient.get(API_ENDPOINTS.ROADMAP.GET.replace(':id', id)),
   list: (params) => httpClient.get(API_ENDPOINTS.ROADMAP.LIST, { params }),
   update: (id, data) =>
-    httpClient.put(API_ENDPOINTS.ROADMAP.UPDATE.replace(':id', id), data),
+    httpClient.patch(API_ENDPOINTS.ROADMAP.UPDATE.replace(':id', id), data),
+}
+
+// Gap Analysis API
+export const gapAnalysisAPI = {
+  create: (data) => httpClient.post(API_ENDPOINTS.GAP_ANALYSIS.CREATE, data),
+  get: (id) => httpClient.get(API_ENDPOINTS.GAP_ANALYSIS.GET.replace(':id', id)),
+}
+
+// Projects API
+export const projectsAPI = {
+  recommend: (data) => httpClient.post(API_ENDPOINTS.PROJECTS.RECOMMEND, data),
+  list: (params) => httpClient.get(API_ENDPOINTS.PROJECTS.LIST, { params }),
+}
+
+// Mentor Review API
+export const mentorReviewAPI = {
+  create: (data) => httpClient.post(API_ENDPOINTS.MENTOR_REVIEW.CREATE, data),
+  list: (params) => httpClient.get(API_ENDPOINTS.MENTOR_REVIEW.LIST, { params }),
+  update: (id, data) => httpClient.patch(API_ENDPOINTS.MENTOR_REVIEW.UPDATE.replace(':id', id), data),
+}
+
+// Notifications API
+export const notificationsAPI = {
+  list: (params) => httpClient.get('/notifications', { params }),
+  markAsRead: (id) => httpClient.patch(`/notifications/${id}/read`),
 }
 
 // Analytics API

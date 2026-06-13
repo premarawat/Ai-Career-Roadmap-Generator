@@ -1,6 +1,16 @@
 import { Navigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
 
+const getRoleDashboard = (role) => {
+  const roleMap = {
+    student: '/dashboard/student',
+    mentor: '/dashboard/mentor',
+    placement_officer: '/dashboard/placement',
+    admin: '/dashboard/admin',
+  }
+  return roleMap[role] ?? '/dashboard/student'
+}
+
 export const PrivateRoute = ({ children }) => {
   const { isAuthenticated } = useAuthStore()
 
@@ -26,10 +36,11 @@ export const RoleRoute = ({ children, allowedRoles }) => {
 }
 
 export const PublicRoute = ({ children }) => {
-  const { isAuthenticated } = useAuthStore()
+  const { isAuthenticated, user } = useAuthStore()
 
   if (isAuthenticated()) {
-    return <Navigate to="/dashboard" replace />
+    const role = user?.role ?? JSON.parse(localStorage.getItem('user') || '{}')?.role
+    return <Navigate to={getRoleDashboard(role)} replace />
   }
 
   return children

@@ -12,7 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 
 export default function RegisterPage() {
   const navigate = useNavigate()
-  const { mutate: register, isPending } = useRegister()
+  const { mutateAsync: register, isPending } = useRegister()
   const {
     register: registerField,
     handleSubmit,
@@ -21,12 +21,14 @@ export default function RegisterPage() {
     resolver: zodResolver(registerSchema),
   })
 
-  const onSubmit = (data) => {
-    register(data, {
-      onSuccess: () => {
-        navigate('/auth/verify-email')
-      },
-    })
+  const onSubmit = async (data) => {
+    try {
+      await register(data)
+      navigate('/auth/verify-email')
+    } catch (error) {
+      // onError in useRegister already displays toast for failures
+      console.error('Registration failed', error)
+    }
   }
 
   return (
